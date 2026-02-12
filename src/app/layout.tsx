@@ -104,6 +104,9 @@ export const metadata: Metadata = {
       "Custom ML, NLP, computer vision, and predictive analytics solutions engineered for enterprise impact.",
     images: ["/og-image.png"],
   },
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({

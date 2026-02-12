@@ -1,10 +1,7 @@
 "use client";
 
-import { useRef, useMemo, useEffect, useState, Suspense } from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { EffectComposer, Bloom, Vignette, ChromaticAberration } from "@react-three/postprocessing";
-import { BlendFunction } from "postprocessing";
-import { Preload, PerformanceMonitor } from "@react-three/drei";
+import { useRef, useMemo, useEffect } from "react";
+import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { getDisperseProgress } from "./HeroBackground";
 
@@ -115,7 +112,7 @@ const vertexShader = `
     gl_Position = projectionMatrix * mvPosition;
     
     // Point size with distance attenuation
-    gl_PointSize = (4.0 + aRandomness * 2.0) * (1.0 / -mvPosition.z) * 80.0;
+    gl_PointSize = (1.5 + aRandomness * 1.0) * (1.0 / -mvPosition.z) * 40.0;
     gl_PointSize *= (1.0 - uScroll * 0.5);
   }
 `;
@@ -136,7 +133,7 @@ const fragmentShader = `
     // Soft edges
     float alpha = 1.0 - smoothstep(0.3, 0.5, dist);
     
-    // Color gradient: dark accent tones
+    // Color gradient: accent tones
     vec3 accent = vec3(0.15, 0.50, 0.40);
     vec3 accentSecondary = vec3(0.35, 0.28, 0.50);
     float gradientMix = vNoise * 0.5 + 0.5;
@@ -149,7 +146,8 @@ const fragmentShader = `
     // Scroll fade
     alpha *= (1.0 - uScroll * 0.8);
 
-    gl_FragColor = vec4(color, alpha * 0.5);
+    // Keep alpha low so additive stacking stays colorful, not white
+    gl_FragColor = vec4(color * 0.6, alpha * 0.12);
   }
 `;
 
@@ -286,99 +284,4 @@ export function HeroCameraController({ mouse }: { mouse: React.MutableRefObject<
   });
 
   return null;
-}
-
-function Scene({ particleCount, mouse, isMobile }: { particleCount: number; mouse: React.MutableRefObject<{ x: number; y: number }>; isMobile: boolean }) {
-  const [degraded, setDegraded] = useState(false);
-
-  return (
-    <>
-      <PerformanceMonitor onDecline={() => setDegraded(true)} onIncline={() => setDegraded(false)}>
-        <HeroParticles count={particleCount} mouse={mouse} />
-        <HeroCameraController mouse={mouse} />
-      </PerformanceMonitor>
-
-      {!degraded && isMobile && (
-        <EffectComposer>
-          <Bloom
-            intensity={0.25}
-            luminanceThreshold={0.6}
-            luminanceSmoothing={0.9}
-            blendFunction={BlendFunction.ADD}
-          />
-          <Vignette darkness={0.7} offset={0.3} />
-        </EffectComposer>
-      )}
-      {!degraded && !isMobile && (
-        <EffectComposer>
-          <Bloom
-            intensity={0.4}
-            luminanceThreshold={0.6}
-            luminanceSmoothing={0.9}
-            blendFunction={BlendFunction.ADD}
-          />
-          <ChromaticAberration
-            blendFunction={BlendFunction.NORMAL}
-            offset={new THREE.Vector2(0.002, 0.002)}
-            radialModulation={false}
-            modulationOffset={0}
-          />
-          <Vignette darkness={0.7} offset={0.3} />
-        </EffectComposer>
-      )}
-      <Preload all />
-    </>
-  );
-}
-
-export function HeroCanvas() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const mouse = useRef({ x: 0, y: 0 });
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    // Detect mobile for performance fallback
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768 || navigator.maxTouchPoints > 0);
-    };
-    
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      mouse.current.x = e.clientX;
-      mouse.current.y = e.clientY;
-    };
-
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
-
-  // Particle count: 20000 desktop, 5000 mobile
-  const particleCount = isMobile ? 5000 : 20000;
-
-  return (
-    <div
-      ref={containerRef}
-      className="fixed inset-0 w-full h-full -z-10"
-    >
-      <Canvas
-        camera={{ position: [0, 0, 5], fov: 75 }}
-        dpr={[1, 1.5]}
-        gl={{
-          antialias: false,
-          powerPreference: "high-performance",
-          alpha: true,
-        }}
-      >
-        <Suspense fallback={null}>
-          <Scene particleCount={particleCount} mouse={mouse} isMobile={isMobile} />
-        </Suspense>
-      </Canvas>
-    </div>
-  );
 }

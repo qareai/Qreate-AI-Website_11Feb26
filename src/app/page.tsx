@@ -1,4 +1,4 @@
-import { HeroSection } from "@/components/hero/HeroSection";
+import dynamic from "next/dynamic";
 import { ServicesSection } from "@/components/sections/ServicesSection";
 import { AboutSection } from "@/components/sections/AboutSection";
 import { FeaturedWorkSection } from "@/components/sections/FeaturedWorkSection";
@@ -10,6 +10,16 @@ import { ProcessSection } from "@/components/sections/ProcessSection";
 import { FAQSection } from "@/components/sections/FAQSection";
 import { CTASection } from "@/components/sections/CTASection";
 import { Footer } from "@/components/layout/Footer";
+
+const HeroSection = dynamic(
+  () =>
+    import("@/components/hero/HeroSection").then((mod) => ({
+      default: mod.HeroSection,
+    })),
+  {
+    ssr: false,
+  }
+);
 
 const organizationJsonLd = {
   "@context": "https://schema.org",

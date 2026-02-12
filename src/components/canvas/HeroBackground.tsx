@@ -111,11 +111,11 @@ export function HeroBackground() {
           {!degraded && (
             <EffectComposer>
               <Bloom
-                intensity={0.2}
-                luminanceThreshold={0.3}
+                intensity={0.1}
+                luminanceThreshold={0.8}
                 luminanceSmoothing={0.9}
               />
-              <Vignette offset={0.3} darkness={0.7} />
+              <Vignette offset={0.3} darkness={0.8} />
             </EffectComposer>
           )}
         </Suspense>
