@@ -124,7 +124,7 @@ body {
 }
 
 .gradient-border-btn::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   border-radius: 9999px;
@@ -149,7 +149,7 @@ body {
 }
 
 @property --gradient-angle {
-  syntax: '<angle>';
+  syntax: "<angle>";
   initial-value: 0deg;
   inherits: false;
 }
@@ -193,7 +193,24 @@ body {
 
 /* Service visuals CSS orb float */
 @keyframes orbFloat {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(5%, -5%) scale(1.05); }
-  66% { transform: translate(-3%, 3%) scale(0.97); }
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(5%, -5%) scale(1.05);
+  }
+  66% {
+    transform: translate(-3%, 3%) scale(0.97);
+  }
+}
+
+/* Stats card shine sweep on hover */
+@keyframes shineSwipe {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }

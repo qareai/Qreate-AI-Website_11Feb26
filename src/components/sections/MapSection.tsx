@@ -129,27 +129,6 @@ function useCountUp(target: number, duration: number, start: boolean) {
   return count;
 }
 
-function StatBlock({ value, suffix, label }: { value: number; suffix: string; label: string }) {
-  return (
-    <div className="text-center">
-      <div className="leading-none">
-        <span
-          className="text-6xl md:text-8xl lg:text-9xl font-bold font-display tabular-nums text-gradient inline-block"
-          style={{ filter: "drop-shadow(0 0 30px rgba(74,242,200,0.15))" }}
-        >
-          {value}
-        </span>
-        <span className="text-3xl md:text-5xl lg:text-6xl font-bold text-accent/40 align-top ml-0.5">
-          {suffix}
-        </span>
-      </div>
-      <p className="font-mono text-[10px] md:text-xs text-text-primary/40 uppercase tracking-[0.3em] mt-3 md:mt-4">
-        {label}
-      </p>
-    </div>
-  );
-}
-
 function StatsDisplay({ isVisible }: { isVisible: boolean }) {
   const partnerships = useCountUp(30, 1800, isVisible);
   const industries = useCountUp(7, 1800, isVisible);
@@ -157,20 +136,22 @@ function StatsDisplay({ isVisible }: { isVisible: boolean }) {
   const countries = useCountUp(4, 1500, isVisible);
 
   return (
-    <div className="space-y-8 md:space-y-12">
-      {/* Row 1: Hero stat pair */}
-      <div className="flex items-center justify-center gap-8 md:gap-16 lg:gap-24">
-        <StatBlock value={partnerships} suffix="+" label="Partnerships" />
-        <div className="h-16 md:h-24 w-px bg-gradient-to-b from-transparent via-accent/20 to-transparent shrink-0" />
-        <StatBlock value={industries} suffix="+" label="Industries" />
-      </div>
+    <div className="flex flex-col items-center gap-5">
+      {/* Primary stats row */}
+      <p className="font-display text-3xl md:text-5xl lg:text-6xl text-text-primary/80 font-semibold tracking-tight">
+        <span className="text-accent font-bold tabular-nums">{partnerships}+</span>{" "}
+        Partnerships
+        <span className="mx-2 md:mx-3 text-text-primary/30">·</span>
+        <span className="text-accent font-bold tabular-nums">{industries}+</span>{" "}
+        Industries
+      </p>
 
-      {/* Row 2: Geographic reach statement */}
-      <p className="font-display text-xl md:text-2xl lg:text-3xl text-center text-text-primary/50 font-medium tracking-tight">
-        Spanning{" "}
+      {/* Geographic reach row */}
+      <p className="font-display text-3xl md:text-5xl lg:text-6xl text-text-primary/80 font-semibold tracking-tight">
+        Across{" "}
         <span className="text-accent font-bold tabular-nums">{continents}</span>{" "}
         Continents
-        <span className="mx-3 md:mx-4 text-accent/20">—</span>
+        <span className="mx-2 md:mx-3 text-text-primary/30">·</span>
         <span className="text-accent font-bold tabular-nums">{countries}</span>{" "}
         Countries
       </p>
