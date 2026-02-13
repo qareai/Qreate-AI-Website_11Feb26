@@ -13,10 +13,17 @@ import Lenis from "lenis";
 // Module-level scroll store — updated every Lenis tick, no React re-renders.
 // R3F components read this directly in useFrame for frame-perfect values.
 let _scrollProgress = 0;
+// eslint-disable-next-line prefer-const
+let _lenisInstance: Lenis | null = null;
 
 /** Get current scroll progress (0-1) without triggering React re-renders. */
 export function getScrollProgress(): number {
   return _scrollProgress;
+}
+
+/** Get the Lenis instance directly (module-level, always available after mount). */
+export function getLenisInstance(): Lenis | null {
+  return _lenisInstance;
 }
 
 interface ScrollContextValue {
@@ -50,6 +57,7 @@ export function SmoothScrollProvider({ children }: SmoothScrollProviderProps) {
     });
 
     lenisRef.current = lenis;
+    _lenisInstance = lenis;
 
     // Update both module-level ref (for R3F) and React state (for DOM components)
     lenis.on("scroll", ({ progress: scrollProgress }: { progress: number }) => {
@@ -65,6 +73,7 @@ export function SmoothScrollProvider({ children }: SmoothScrollProviderProps) {
     requestAnimationFrame(raf);
 
     return () => {
+      _lenisInstance = null;
       lenis.destroy();
     };
   }, []);
